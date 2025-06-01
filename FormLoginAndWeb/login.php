@@ -1,32 +1,44 @@
 <?php 
 session_start();
+// kết nối database
 $servername = "localhost";
 $username = "root";
 $password = "";
 $dbname = "sqlinjection";
-
 $conn = new mysqli($servername, $username, $password, $dbname);
 
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
+// Xử lý đăng nhập
 if (isset($_POST['login'])) {
     $taikhoan = $_POST['username'];
     $password = $_POST['password'];
+
+    // Thực hiện truy vấn không an toàn - dễ bị SQL INJECTION
     $sql = "SELECT * FROM user WHERE TenUser = '$taikhoan' AND Pass = '$password'";
-    $kq = mysqli_query($conn, $sql);
-    
-    if (mysqli_num_rows($kq) > 0) {
-        $user = mysqli_fetch_assoc($kq);
-        $_SESSION['username'] = $user['TenUser'];
-        $_SESSION['password'] = $user['Pass'];
-        header("Location: result.php");
-        exit();
+ 
+    // Dùng multi_query để chạy nhiều truy vấn - dễ thêm xóa sửa dữ liệu
+    if (mysqli_multi_query($conn, $sql)) {
+        if ($result = mysqli_store_result($conn)) {
+            if (mysqli_num_rows($result) > 0) {
+                $user = mysqli_fetch_assoc($result);
+                $_SESSION['user_id'] = $user['ID'];
+                $_SESSION['username'] = $user['TenUser'];
+                $_SESSION['password'] = $user['Pass'];
+                mysqli_free_result($result); // giải phóng bộ nhớ
+                header("Location: result.php");
+                exit();
+            } else {
+                mysqli_free_result($result);
+                $_SESSION['error'] = "Sai tên đăng nhập hoặc mật khẩu!";
+                header("Location: login.php");
+                exit();
+            }
+        }
     } else {
-        $_SESSION['error'] = "Đăng nhập thất bại!";
-        header("Location: login.php");
-        exit();
+        echo "<p style='color: red;'>Lỗi SQL: " . mysqli_error($conn) . "</p>";
     }
 }
 ?>
@@ -118,7 +130,7 @@ if (isset($_POST['login'])) {
             <input type="text" id="username" name="username" placeholder="Nhập tên đăng nhập" required>
 
             <label for="password">Mật khẩu:</label>
-            <input type="password" id="password" name="password" placeholder="Nhập mật khẩu" required>
+            <input type="text" id="password" name="password" placeholder="Nhập mật khẩu" required>
 
             <input type="submit" id="login" name="login" value="Đăng Nhập">
         </form>

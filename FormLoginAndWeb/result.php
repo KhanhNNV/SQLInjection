@@ -4,10 +4,7 @@ if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit();
 }
-if (isset($_POST['login'])){
-    header("Location: delete.php");
-    exit();
-}
+
 ?>
 
 <!DOCTYPE html>
@@ -72,12 +69,22 @@ a.logout:hover {
 </head>
 <body>
 <div class="container">
-    <h2>Chào mừng, <?php echo htmlspecialchars($_SESSION['username']); ?> </h2>
-    <p>Mật khẩu: <?php echo htmlspecialchars($_SESSION['username']); ?> </p>
+    <h2>Đăng nhập thành công</h2>
+
     <a class="logout" href="login.php">Đăng xuất</a>
-    <input type="submit" id="delete" name="delete" value="Xóa tài khoản">
-            
+
+    <br><br>
+    <a class="logout" href="delete.php?id=<?= $_SESSION['user_id'] ?>">Xóa tài khoản</a>
+
+    <br><br>
+    <a class="logout" href="view.php?id=<?= $_SESSION['user_id'] ?>">Xem thông tin</a>
+
+    <br><br>
+    <a class="logout" href="add.php?id=<?= $_SESSION['user_id'] ?>">Thêm tài khoản</a>
+
+    <br><br>
+    <a class="logout" href="update.php?id=<?= $_SESSION['user_id'] ?>">Sửa tài khoản</a>
 </div>
+
 </body>
 </html>
-
