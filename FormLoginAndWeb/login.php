@@ -1,4 +1,14 @@
 <?php 
+
+// // Tắt toàn bộ lỗi hiển thị ra màn hình
+// ini_set('display_errors', 0);
+// ini_set('display_startup_errors', 0);
+// error_reporting(0);
+
+// // Tắt cơ chế tự động ném exception của MySQLi (bỏ stack trace)
+// mysqli_report(MYSQLI_REPORT_OFF);
+
+
 session_start();
 // kết nối database
 $servername = "localhost";
@@ -11,12 +21,14 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Xử lý đăng nhập
+// Xử lý đăng nhập ko an toàn
 if (isset($_POST['login'])) {
     $taikhoan = $_POST['username'];
     $password = $_POST['password'];
 
     // Thực hiện truy vấn không an toàn - dễ bị SQL INJECTION
+
+
     $sql = "SELECT * FROM user WHERE TenUser = '$taikhoan' AND Pass = '$password'";
  
     // Dùng multi_query để chạy nhiều truy vấn - dễ thêm xóa sửa dữ liệu
@@ -41,6 +53,34 @@ if (isset($_POST['login'])) {
         echo "<p style='color: red;'>Lỗi SQL: " . mysqli_error($conn) . "</p>";
     }
 }
+
+// Xử lý đăng nhập an toàn
+// if (isset($_POST['login'])) {
+//     $taikhoan = trim($_POST['username']); //dùng trim để xử lý khoảng trắng đầu và cuối
+//     $password = trim($_POST['password']);
+
+//     // Truy vấn chuẩn hóa để chống SQL Injection
+//     $stmt = $conn->prepare("SELECT * FROM user WHERE TenUser = ? AND Pass = ?");
+//     $stmt->bind_param("ss", $taikhoan, $password); //Ràng buộc (bind) các giá trị $taikhoan và $password vào 2 dấu ? ở câu SQL trên.
+//     $stmt->execute();//Thực thi truy vấn an toàn với giá trị đã được ràng buộc.
+//     $result = $stmt->get_result(); //Lấy kết quả trả về từ truy vấn.
+
+//     if ($result && $result->num_rows > 0) {
+//         $user = $result->fetch_assoc();
+//         $_SESSION['user_id'] = $user['ID'];
+//         $_SESSION['username'] = $user['TenUser'];
+//         $_SESSION['password'] = $user['Pass'];
+//         header("Location: result.php");
+//         exit();
+//     } else {
+//         $_SESSION['error'] = "Sai tên đăng nhập hoặc mật khẩu!";
+//         header("Location: login.php");
+//         exit();
+//     }
+// }
+
+
+
 ?>
 
 <!DOCTYPE html>

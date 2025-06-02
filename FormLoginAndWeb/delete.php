@@ -1,4 +1,11 @@
 <?php
+// Tắt toàn bộ lỗi hiển thị ra màn hình
+// ini_set('display_errors', 0);
+// ini_set('display_startup_errors', 0);
+// error_reporting(0);
+
+// Tắt cơ chế tự động ném exception của MySQLi (bỏ stack trace)
+// mysqli_report(MYSQLI_REPORT_OFF);
 session_start();
 
 // Kết nối database
@@ -46,9 +53,9 @@ echo '<style>
 
 // Nếu có tham số id truyền vào
 if (isset($_GET['id'])) {
-    $id = $_GET['id'];  // ❌ Không kiểm tra, không xử lý dữ liệu => DỄ BỊ SQL Injection
+    $id = $_GET['id'];  // Không kiểm tra, không xử lý dữ liệu => DỄ BỊ SQL Injection
 
-    // ❌ Câu truy vấn SQL dễ bị tấn công khi truyền tham số qua URL
+    // Câu truy vấn SQL dễ bị tấn công khi truyền tham số qua URL
     // VD: ?id=0 OR 1=1 sẽ thành câu SQL:
     // DELETE FROM user WHERE ID = 0 OR 1=1
     // => xóa toàn bộ bảng user do '1=1' luôn đúng
@@ -70,23 +77,42 @@ if (isset($_GET['id'])) {
     echo "<p>Không có dữ liệu để xóa.</p>";
 }
 
-// === Giải pháp an toàn chống SQL Injection: ===
-// Thay vì chèn trực tiếp biến $id vào câu SQL,
-// nên dùng Prepared Statement với bind_param kiểu số nguyên:
-//
+
+
+// ==========================  CHỐNG SQL INJECTION ==========================
+// Sử dụng câu lệnh chuẩn bị sẵn (prepared statement).
+// => Giúp biến `$id` không thể chèn mã độc vào câu SQL.
+// */
+
+
+// if (isset($_POST['id'])) {
+//     $id = $_POST['id']; 
+
+// // Chuyển giá trị sang kiểu số nguyên để đảm bảo an toàn (ngoài prepared statement)
+// $id = (int)$id;
+
 // $stmt = $conn->prepare("DELETE FROM user WHERE ID = ?");
-// $stmt->bind_param("i", $id);
-// $stmt->execute();
-//
-// Nếu thành công thì:
-// if ($stmt->affected_rows > 0) {
-//     // xử lý sau xóa thành công
+// $stmt->bind_param("i", $id);  // 'i' là kiểu số nguyên
+// $success = $stmt->execute();
+
+// if ($success) {
+//     if ($id == $_SESSION['user_id']) {
+//         session_destroy();
+//         echo "<p>Tài khoản của bạn đã bị xóa. Bạn đã đăng xuất.</p>";
+//     } else {
+//         echo "<p>Tài khoản khác đã bị xóa.</p>";
+//     }
+//     echo '<a href="login.php">Quay lại</a>';
+// } else {
+//     echo "<p style='color:red;'>Lỗi khi xóa tài khoản: " . $stmt->error . "</p>";
 // }
-//
-// Chuẩn này giúp:
-// - $id được xử lý an toàn, không thể chèn thêm câu lệnh SQL
-// - Bảo vệ ứng dụng khỏi các cuộc tấn công SQL Injection
-//
+
+// $stmt->close();
+// } else {
+// echo "<p>Không có dữ liệu để xóa.</p>";
+// }
+
+
 
 mysqli_close($conn);
 ?>

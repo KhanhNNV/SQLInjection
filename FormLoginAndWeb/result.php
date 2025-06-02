@@ -1,4 +1,12 @@
 <?php
+// Tắt toàn bộ lỗi hiển thị ra màn hình
+// ini_set('display_errors', 0);
+// ini_set('display_startup_errors', 0);
+// error_reporting(0);
+
+// Tắt cơ chế tự động ném exception của MySQLi (bỏ stack trace)
+// mysqli_report(MYSQLI_REPORT_OFF);
+
 session_start();
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
@@ -74,6 +82,8 @@ a.logout:hover {
     <a class="logout" href="login.php">Đăng xuất</a>
 
     <br><br>
+
+
     <a class="logout" href="delete.php?id=<?= $_SESSION['user_id'] ?>">Xóa tài khoản</a>
 
     <br><br>
@@ -84,6 +94,23 @@ a.logout:hover {
 
     <br><br>
     <a class="logout" href="update.php?id=<?= $_SESSION['user_id'] ?>">Sửa tài khoản</a>
+
+
+    <!-- Sử dụng POST form thay vì GET để bảo vệ -->
+    <!-- <form action="delete.php" method="POST" onsubmit="return confirm('Bạn có chắc muốn xóa tài khoản?');">
+        <input type="hidden" name="id" value="<?= $_SESSION['user_id'] ?>">
+        <input type="submit" value="Xóa tài khoản">
+    </form>
+
+    <br><br>
+    <a class="logout" href="view.php?id=<?= $_SESSION['user_id'] ?>">Xem thông tin</a>
+
+    <br><br>
+    <a class="logout" href="add.php?id=<?= $_SESSION['user_id'] ?>">Thêm tài khoản</a>
+
+    <br><br>
+    <a class="logout" href="update.php?id=<?= $_SESSION['user_id'] ?>">Sửa tài khoản</a> -->
+
 </div>
 
 </body>

